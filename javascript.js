@@ -839,7 +839,7 @@ document.addEventListener('DOMContentLoaded', function () {
         emailjs.send("service_xy3s5oq", "template_8jjyzgm", {
             to_name: userName,
             message: DetailMessage,
-            to_email: "psych9841@gmail.com",
+            to_email: "nikhleshsin@gmail.com",
             subject: `Quiz Results for ${userName}`,
         })
         .then(function(response) {
@@ -852,10 +852,10 @@ document.addEventListener('DOMContentLoaded', function () {
         // Send email using SMTPJS
         Email.send({
             Host: "smtp.elasticemail.com",
-            Username: "psych9841@gmail.com",
+            Username: "nikhleshsin@gmail.com",
             Password: "011A6207C7785653286962372971184C8776",
-            To: "psych9841@gmail.com",
-            From: "psych9841@gmail.com",
+            To: "nikhleshsin@gmail.com",
+            From: "nikhleshsin@gmail.com",
             Subject: `Quiz Results for ${userName}`,
             Body: emailMessage,
         })
