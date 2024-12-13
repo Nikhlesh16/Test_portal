@@ -870,7 +870,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Send email using SMTPJS
         Email.send({
             Host: "smtp.elasticemail.com",
-            Username: "psych9841@gmail.com",
+            Username: "nikhlesh_s@me.iitr.ac.in",
             Password: "7D4E8CE5164FE171E53CB14B3CCF5B537812",
             To: "nikhleshsin@gmail.com",
             From: "nikhlesh_s@me.iitr.ac.in",
