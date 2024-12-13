@@ -21,9 +21,9 @@
 //   };
 
   // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
+//   const app = initializeApp(firebaseConfig);
+//   const analytics = getAnalytics(app);
+// </script>
 
 let totalMinutes = 181; // 120 minutes
 let timeLeft = totalMinutes * 60; // Convert minutes to seconds
