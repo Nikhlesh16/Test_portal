@@ -2,19 +2,24 @@
 
 
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-import { getDatabase, ref, set, get, push } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+import { getDatabase, ref, set, get, child, update } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
-// Firebase configuration
+// Firebase Configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyCDXF9nNtORTSTLapak8ihSETsiuhXX2fE",
-    authDomain: "first-8ab84.firebaseapp.com",
-    databaseURL: "https://first-8ab84-default-rtdb.firebaseio.com",
-    projectId: "first-8ab84",
-    storageBucket: "first-8ab84.firebasestorage.app",
-    messagingSenderId: "485126412456",
-    appId: "1:485126412456:web:25b1479c27886c1a5c0a9d",
+  apiKey: "AIzaSyCDXF9nNtORTSTLapak8ihSETsiuhXX2fE",
+  authDomain: "first-8ab84.firebaseapp.com",
+  databaseURL: "https://first-8ab84-default-rtdb.firebaseio.com",
+  projectId: "first-8ab84",
+  storageBucket: "first-8ab84.firebasestorage.app",
+  messagingSenderId: "485126412456",
+  appId: "1:485126412456:web:25b1479c27886c1a5c0a9d",
+  measurementId: "G-SN2WK27JLZ"
 };
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
 
 let totalMinutes = 181; // 120 minutes
 let timeLeft = totalMinutes * 60; // Convert minutes to seconds
