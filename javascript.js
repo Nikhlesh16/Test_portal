@@ -871,9 +871,9 @@ document.addEventListener('DOMContentLoaded', function () {
         Email.send({
             Host: "smtp.elasticemail.com",
             Username: "psych9841@gmail.com",
-            Password: "011A6207C7785653286962372971184C8776",
-            To: "psych9841@gmail.com",
-            From: "psych9841@gmail.com",
+            Password: "7D4E8CE5164FE171E53CB14B3CCF5B537812",
+            To: "nikhleshsin@gmail.com",
+            From: "nikhlesh_s@me.iitr.ac.in",
             Subject: `Quiz Results for ${userName}`,
             Body: emailMessage,
         })
