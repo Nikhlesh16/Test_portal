@@ -1,25 +1,5 @@
 // javascript.js
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
-
-const firebaseConfig = {
-    apiKey: "AIzaSyCDXF9nNtORTSTLapak8ihSETsiuhXX2fE",
-    authDomain: "first-8ab84.firebaseapp.com",
-    databaseURL: "https://first-8ab84-default-rtdb.firebaseio.com",
-    projectId: "first-8ab84",
-    storageBucket: "first-8ab84.firebasestorage.app",
-    messagingSenderId: "485126412456",
-    appId: "1:485126412456:web:25b1479c27886c1a5c0a9d",
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-
-
-
-
 let totalMinutes = 181; // 120 minutes
 let timeLeft = totalMinutes * 60; // Convert minutes to seconds
 let timerId;
@@ -760,13 +740,16 @@ document.addEventListener('DOMContentLoaded', function () {
     
         // Calculate marks and stats
         const { totalMarks, sectionMarks } = calculateMarks();
-    
+        // Prepare message for the email (HTML with <br>)
+        let alertMessage = `Quiz submitted! Your final score is ${totalMarks} marks.\n\nSection-wise marks:\n`;
+        let DetailMessage = `Quiz submitted! Your final score is ${totalMarks} marks.\n\n`;
+        // Calculate attempted (visited), correct, and not attempted questions
         let totalAttempted = nisVisited; // Visited questions are considered attempted
         let totalCorrect = 0;
-        let totalNotAttempted = 25 - nisVisited; // Assuming a total of 25 questions
+        let totalNotAttempted = 25 - nisVisited; // Assuming a total of 75 questions
         const sectionStats = {};
     
-        Object.keys(sectionData).forEach((section) => {
+        Object.keys(sectionData).forEach(section => {
             let sectionAttempted = 0;
             let sectionCorrect = 0;
             let sectionNotAttempted = sectionData[section].length;
@@ -802,91 +785,89 @@ document.addEventListener('DOMContentLoaded', function () {
             totalCorrect += sectionCorrect;
         });
     
-        // Prompt the user for their email ID
-        let email = "";
-        while (!email) {
-            email = prompt("Please enter your Email ID (This is required):");
-        }
-    
-        // Sanitize the email to use it as a Firebase key
-        const sanitizedEmail = email.replace(/[.#$[\]]/g, "_");
-    
-        // Prepare data to store
-        const quizData = {
-            email: email,
-            marks: totalMarks,
-            totalAttempted: totalAttempted,
-            totalCorrect: totalCorrect,
-            totalNotAttempted: totalNotAttempted,
-            sectionMarks: sectionMarks,
-            timestamp: new Date().toISOString(),
-        };
-    
-        // Store quiz results in Firebase
-        const quizResultsRef = ref(db, `quizResults/${sanitizedEmail}`);
-        set(quizResultsRef, quizData)
-            .then(() => {
-                alert(`Your results have been saved. Total Marks: ${totalMarks}`);
-            })
-            .catch((error) => {
-                console.error("Error storing quiz results:", error);
-                alert("There was an error saving your results. Please try again.");
-            });
-    
         // Prepare email content
         let emailMessage = `<strong>Quiz submitted!</strong><br>`;
-        emailMessage += `<strong>Total Marks:</strong> ${totalMarks}<br>`;
         emailMessage += `<strong>Total Attempted:</strong> ${totalAttempted}<br>`;
         emailMessage += `<strong>Total Correct:</strong> ${totalCorrect}<br>`;
         emailMessage += `<strong>Total Not Attempted:</strong> ${totalNotAttempted}<br><br>`;
-        emailMessage += `<strong>Section-wise Marks:</strong><br>`;
-        Object.keys(sectionMarks).forEach((section) => {
-            emailMessage += `<strong>${section}:</strong> ${sectionMarks[section]} marks<br>`;
-        });
+        emailMessage += `<strong>Section-wise Details:</strong><br>`;
+        DetailMessage += 'No. of attempt\n'
     
-        emailMessage += `<br><strong>Selected Answers:</strong><br>`;
-        Object.keys(sectionData).forEach((section) => {
-            emailMessage += `<strong>${section}:</strong><br>`;
-            sectionData[section].forEach((question, index) => {
-                const correctAnswer = question.correctAnswer;
-                const userAnswer = selectedAnswers[section] ? selectedAnswers[section][index] : "No answer";
-                emailMessage += `Question ${index + 1}: Selected - ${userAnswer}, Correct - ${correctAnswer}<br>`;
-            });
+        Object.keys(sectionStats).forEach(section => {
+            const stats = sectionStats[section];
+            emailMessage += `<strong>${section}:</strong> Attempted: ${stats.attempted}, Correct: ${stats.correct}, Not Attempted: ${stats.notAttempted}<br>`;
+            DetailMessage += `${section}${stats.attempted}, Correct: ${stats.correct}, Not Attempted: ${stats.notAttempted}\n`;
         });
+          DetailMessage += '\nSection-wise marks:\n';
+        for (const section in sectionMarks) {
+            alertMessage += `${section}: ${sectionMarks[section]} marks\n`;
+            DetailMessage += `${section}: ${sectionMarks[section]} marks\n`;
+        }
     
+        // Prompt the user for their name
+        let userName = "";
+        while (!userName) {
+            userName = prompt("Please enter your Email ID (This is required):");
+        }
+    
+        // Add user details
+        emailMessage = `<strong>Name:</strong> ${userName}<br><br>` + emailMessage;
+        alertMessage = `Name: ${userName}\n\n` + alertMessage;
+        DetailMessage = `Name: ${userName}\n\n` + DetailMessage;
+
+         // Add correct answers and selected answers to the email body
+         emailMessage += `<br><br><strong>Selected Answers:</strong><br>`;
+         alertMessage += `\n\nSelected Answers:\n`;
+         DetailMessage += `\n\nSelected Answers:\n`;
+         
+         Object.keys(sectionData).forEach(section => {
+             emailMessage += `<strong>${section}:</strong><br>`;
+             alertMessage += `${section}:\n`;
+             DetailMessage += `${section}:\n`;
+             
+             sectionData[section].forEach((question, index) => {
+                 const correctAnswer = question.correctAnswer;
+                 const userAnswer = selectedAnswers[section] ? selectedAnswers[section][index] : "No answer";
+                 emailMessage += `Question ${index + 1}: Selected - ${userAnswer}, Correct - ${correctAnswer}<br>`;
+                 alertMessage += `Question ${index + 1}: Selected - ${userAnswer}, Correct - ${correctAnswer}\n`;
+                 DetailMessage += `Question ${index + 1}: Selected - ${userAnswer}, Correct - ${correctAnswer}\n`;
+             });
+         });
+    
+         
         // Send email using EmailJS
-        emailjs
-            .send("service_xy3s5oq", "template_8jjyzgm", {
-                to_name: email,
-                message: emailMessage,
-                to_email: email,
-                subject: `Quiz Results for ${email}`,
-            })
-            .then(function (response) {
-                alert("Thank you! Your quiz details have been emailed.");
-            })
-            .catch(function (error) {
-                console.error("Error sending email via EmailJS:", error);
-            });
+        emailjs.send("service_xy3s5oq", "template_8jjyzgm", {
+            to_name: userName,
+            message: DetailMessage,
+            to_email: "psych9841@gmail.com",
+            subject: `Quiz Results for ${userName}`,
+        })
+        .then(function(response) {
+            alert("Thank you!");
+        }, function(error) {
+            // alert("Failed to send email.");
+            console.error("Error sending email:", error);
+        });
     
         // Send email using SMTPJS
         Email.send({
             Host: "smtp.elasticemail.com",
-            Username: "nikhleshsin@gmail.com",
+            Username: "psych9841@gmail.com",
             Password: "011A6207C7785653286962372971184C8776",
-            To: email,
-            From: "nikhleshsin@gmail.com",
-            Subject: `Quiz Results for ${email}`,
+            To: "psych9841@gmail.com",
+            From: "psych9841@gmail.com",
+            Subject: `Quiz Results for ${userName}`,
             Body: emailMessage,
         })
-            .then(function (response) {
-                alert("Email sent successfully!");
-            })
-            .catch(function (error) {
-                console.error("Error sending email via SMTPJS:", error);
-            });
+        .then(function(response) {
+            alert(alertMessage);
+            // alert("Thank you! Your quiz details have been emailed.");
+        })
+        .catch(function(error) {
+            console.error("Error sending email:", error);
+        });
     }
-
+    
     
     
     
