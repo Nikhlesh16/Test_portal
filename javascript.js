@@ -116,12 +116,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const sectionData = {
         phySec1: [],
-        phySec2: []
-        // chemSec1: [],
-        // chemSec2: [],
-        // mathsSec1: [],
-        // mathsSec2: []
-        // bioSec1: []
+        phySec2: [],
+        chemSec1: [],
+        chemSec2: [],
+        mathsSec1: [],
+        mathsSec2: [],
+        bioSec1: []
     };
     
     // Function to generate URLs based on question number
